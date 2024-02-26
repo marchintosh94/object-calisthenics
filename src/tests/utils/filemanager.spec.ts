@@ -16,7 +16,7 @@ describe('createFile', () => {
   })
 
   it('should create a new file with the given payload in the new directory', () => {
-    FileManager.createFile({ folderPath, fileName, payload })
+    FileManager.createUpdateFile({ folderPath, fileName, payload })
 
     const fileContent = fs.readFileSync(filePath, 'utf8')
     expect(fileContent).toBe(payload)
@@ -24,7 +24,11 @@ describe('createFile', () => {
 
   it('should append to the file if it already exists', () => {
     const additionalPayload = ' Appended content'
-    FileManager.createFile({ folderPath, fileName, payload: additionalPayload })
+    FileManager.createUpdateFile({
+      folderPath,
+      fileName,
+      payload: additionalPayload
+    })
 
     const fileContent = fs.readFileSync(filePath, 'utf8')
     expect(fileContent).toBe(payload + additionalPayload)
@@ -65,5 +69,15 @@ describe('parseJsonFile', () => {
 
     const parsedContent = FileManager.parseJsonFile(filePath)
     expect(parsedContent).toEqual(fileContent)
+  })
+})
+describe('preparePayload', () => {
+  it('should return the prepared payload', () => {
+    const input = { test: 'Hello, world!' }
+    const expectedOutput = '{\n  "test": "Hello, world!"\n}'
+
+    const result = FileManager.preparePayload(input)
+
+    expect(result).toBe(expectedOutput)
   })
 })

@@ -4,7 +4,7 @@ import { CreateFileParams } from './types'
 export const ERROR_FILE_NOT_FOUND = 'File does not exist'
 export const ERROR_PARSING_FILE = 'Error parsing file'
 
-const createFile = ({
+const createUpdateFile = ({
   folderPath,
   fileName,
   payload
@@ -16,20 +16,25 @@ const createFile = ({
   fs.writeFileSync(filePath, payload, { flag: 'a' })
 }
 
-const parseJsonFile = (filePath: string): string => {
+const parseJsonFile = <T>(filePath: string): T => {
   if (!fs.existsSync(filePath)) {
     throw new Error(ERROR_FILE_NOT_FOUND)
   }
 
   try {
     const content = fs.readFileSync(filePath, 'utf8')
-    return JSON.parse(content)
+    return JSON.parse(content) as T
   } catch (error) {
     throw new Error(ERROR_PARSING_FILE)
   }
 }
 
+const preparePayload = <T>(payload: T): string => {
+  return JSON.stringify(payload, null, 2)
+}
+
 export const FileManager = {
-  createFile,
-  parseJsonFile
+  createUpdateFile,
+  parseJsonFile,
+  preparePayload
 }

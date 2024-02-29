@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "start": "ts-node src/index",
+    "start": "npm run build && node dist",
     "prepare": "husky",
     "test": "jest"
   },
@@ -29,6 +29,7 @@
     ]
   },
   "dependencies": {
+    "@inquirer/prompts": "^4.1.0",
     "dotenv": "^16.4.5"
   }
 }

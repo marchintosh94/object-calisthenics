@@ -12,8 +12,14 @@ const config: Config = {
   coverageProvider: 'v8',
   verbose: true,
   testEnvironment: 'node',
-  preset: 'ts-jest',
-  collectCoverageFrom: ['src/**/*.{ts}', '!src/**/index.ts']
+  collectCoverageFrom: [
+    'src/**/*.{ts,js}',
+    '!src/**/index.ts',
+    '!src/**/*.d.ts',
+    '!src/**/type*.ts',
+    '!src/**/app.ts'
+  ],
+  preset: 'ts-jest'
 }
 
 export default config

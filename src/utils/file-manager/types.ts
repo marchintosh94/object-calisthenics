@@ -3,3 +3,4 @@ export interface CreateFileParams {
   fileName: string
   payload: string
 }
+export interface ReadFileParams extends Omit<CreateFileParams, 'payload'> {}

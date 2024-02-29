@@ -22,7 +22,7 @@ describe('createFile', () => {
     expect(fileContent).toBe(payload)
   })
 
-  it('should append to the file if it already exists', () => {
+  it('should rewrite to the file if it already exists', () => {
     const additionalPayload = ' Appended content'
     FileManager.createUpdateFile({
       folderPath,
@@ -31,7 +31,7 @@ describe('createFile', () => {
     })
 
     const fileContent = fs.readFileSync(filePath, 'utf8')
-    expect(fileContent).toBe(payload + additionalPayload)
+    expect(fileContent).toBe(additionalPayload)
   })
 })
 
@@ -79,5 +79,55 @@ describe('preparePayload', () => {
     const result = FileManager.preparePayload(input)
 
     expect(result).toBe(expectedOutput)
+  })
+})
+describe('readFileSync', () => {
+  const folderPath = 'path/to'
+  const fileName = 'test-file.json'
+  const filePath = `${folderPath}/${fileName}`
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('should return the parsed JSON content if the file exists and contains valid JSON', () => {
+    const fileContent = { key: 'value' }
+    jest
+      .spyOn(fs, 'readFileSync')
+      .mockReturnValueOnce(JSON.stringify(fileContent))
+
+    const result = FileManager.readFileSync<{ key: string }>({
+      folderPath,
+      fileName
+    })
+
+    expect(result).toEqual(fileContent)
+    expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf8')
+  })
+
+  it('should return undefined if there is an error parsing the file', () => {
+    jest.spyOn(fs, 'readFileSync').mockReturnValueOnce('invalid json')
+
+    const result = FileManager.readFileSync<{ key: string }>({
+      folderPath,
+      fileName
+    })
+
+    expect(result).toBeUndefined()
+    expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf8')
+  })
+
+  it('should return undefined if the file does not exist', () => {
+    jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
+      throw new Error('File not found')
+    })
+
+    const result = FileManager.readFileSync<{ key: string }>({
+      folderPath,
+      fileName
+    })
+
+    expect(result).toBeUndefined()
+    expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf8')
   })
 })

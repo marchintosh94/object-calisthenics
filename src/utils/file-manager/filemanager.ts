@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { CreateFileParams } from './types'
+import { CreateFileParams, ReadFileParams } from './types'
 
 export const ERROR_FILE_NOT_FOUND = 'File does not exist'
 export const ERROR_PARSING_FILE = 'Error parsing file'
@@ -13,7 +13,20 @@ const createUpdateFile = ({
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, { recursive: true })
   }
-  fs.writeFileSync(filePath, payload, { flag: 'a' })
+  fs.writeFileSync(filePath, payload, { flag: 'w' })
+}
+
+const readFileSync = <T>({
+  folderPath,
+  fileName
+}: ReadFileParams): T | undefined => {
+  const filePath = `${folderPath}/${fileName}`
+  try {
+    const content = fs.readFileSync(filePath, 'utf8')
+    return JSON.parse(content) as T
+  } catch (error) {
+    return undefined
+  }
 }
 
 const parseJsonFile = <T>(filePath: string): T => {
@@ -36,5 +49,6 @@ const preparePayload = <T>(payload: T): string => {
 export const FileManager = {
   createUpdateFile,
   parseJsonFile,
-  preparePayload
+  preparePayload,
+  readFileSync
 }
